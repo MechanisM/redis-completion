@@ -28,6 +28,13 @@ API
     The underlying data structure used to provide autocompletion is a sorted set,
     details are described `in this post <http://antirez.com/post/autocomplete-with-redis.html>`_.
 
+    Usage:
+
+    .. code-block:: python
+
+        from redis_completion import RedisEngine()
+        engine = RedisEngine()
+
     .. py:method:: store(obj_id[, title=None[, data=None]])
 
         :param obj_id: a unique identifier for the object
@@ -96,7 +103,7 @@ API
             [{'published': True, 'title': 'an entry about python', 'url': '/blog/1/'},
              {'published': False, 'title': 'using redis with python', 'url': '/blog/3/'}]
 
-    .. py:method:: search(phrase[, limit=None[, filters=None[, mappers=None]]])
+    .. py:method:: search_json(phrase[, limit=None[, filters=None[, mappers=None]]])
 
         Like :py:meth:`search` except ``json.loads`` is inserted as the very first
         mapper.  Best when used in conjunction with :py:meth:`store_json`.
