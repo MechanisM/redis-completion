@@ -27,7 +27,7 @@ class RedisEngine(object):
     http://antirez.com/post/autocomplete-with-redis.html
     http://stackoverflow.com/questions/1958005/redis-autocomplete/1966188#1966188
     """
-    def __init__(self, gram_lengths=None, min_length=3, prefix='ac', stop_words=None, terminator='^', **conn_kwargs):
+    def __init__(self, gram_lengths=None, min_length=2, prefix='ac', stop_words=None, terminator='^', **conn_kwargs):
         self.conn_kwargs = conn_kwargs
         self.client = self.get_client()
 

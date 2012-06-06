@@ -5,7 +5,7 @@ API
 
 .. py:module:: redis_completion.engine
 
-.. py:class:: RedisEngine(gram_lengths=None, min_length=3, prefix='ac', stop_words=None, terminator='^', **conn_kwargs)
+.. py:class:: RedisEngine(gram_lengths=None, min_length=2, prefix='ac', stop_words=None, terminator='^', **conn_kwargs)
 
     :param gram_lengths: a 2-tuple containing the min and max lengths of n-grams
         to generate.  The default is (2, 3), meaning that the phrase "Autocomplete with redis"
