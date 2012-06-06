@@ -61,13 +61,15 @@ class RedisEngine(object):
 
     def score_key(self, k, max_size=10):
         k_len = len(k)
-        iters = min(max_size, k_len)
         a = ord('a') - 1
         score = 0
 
-        for i in range(iters):
-            c = (ord(k[i]) - a)
-            score += c*(26**(iters-i))
+        for i in range(max_size):
+            if i < k_len:
+                c = (ord(k[i]) - a)
+            else:
+                c = 1
+            score += c*(26**(max_size-i))
         return score
 
     def create_key(self, phrase):
