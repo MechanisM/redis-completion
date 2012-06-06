@@ -48,3 +48,18 @@ If you want to store more complex data, like blog entries:
     # just published entries, please
     >>> engine.search_json('redis', filters=[lambda i: i['published'] == True])
     [{u'published': True, u'title': u'all about redis', u'url': u'/blog/2/'}]
+
+
+installing
+----------
+
+Install with pip::
+
+    pip install redis-completion
+
+
+Install via git::
+
+    git clone https://github.com/coleifer/redis-completion.git
+    cd redis-completion
+    python setup.py install
