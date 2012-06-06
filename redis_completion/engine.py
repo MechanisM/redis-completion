@@ -59,7 +59,7 @@ class RedisEngine(object):
         for i in range(0, len(keys), batch_size):
             self.client.delete(*keys[i:i+batch_size])
 
-    def score_key(self, k, max_size=10):
+    def score_key(self, k, max_size=20):
         k_len = len(k)
         a = ord('a') - 1
         score = 0
