@@ -32,7 +32,7 @@ API
 
     .. code-block:: python
 
-        from redis_completion import RedisEngine()
+        from redis_completion import RedisEngine
         engine = RedisEngine()
 
     .. py:method:: store(obj_id[, title=None[, data=None]])
