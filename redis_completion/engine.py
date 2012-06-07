@@ -7,7 +7,6 @@ import re
 from redis import Redis
 
 from redis_completion.stop_words import STOP_WORDS as _STOP_WORDS
-from redis_completion.text import create_key as _ck, partial_complete as _pc
 
 
 # aggressive stop words will be better when the length of the document is longer
