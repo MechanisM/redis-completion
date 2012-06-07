@@ -3,20 +3,15 @@
 API
 ===
 
-.. py:module:: redis_completion.engine
+.. py:class:: RedisEngine(min_length=2, prefix='ac', stop_words=None, \
+                          cache_timeout=300, **conn_kwargs)
 
-.. py:class:: RedisEngine(gram_lengths=None, min_length=2, prefix='ac', stop_words=None, terminator='^', **conn_kwargs)
-
-    :param gram_lengths: a 2-tuple containing the min and max lengths of n-grams
-        to generate.  The default is (2, 3), meaning that the phrase "Autocomplete with redis"
-        would become ``[autocomplete with], [autocomplete with redis], [with redis], [redis]``
-    :param min_length: the minimum length a phrase has to be to return meaningful
+    :param integer min_length: the minimum length a phrase has to be to return meaningful
         search results
-    :param prefix: a prefix used for all keys stored in Redis to allow multiple
+    :param string prefix: a prefix used for all keys stored in Redis to allow multiple
         "indexes" to exist and to make deletion easier.
-    :param stop_words: a ``set()`` of stop words to remove from index/search data
-    :param terminator: a character used internally to represent that a given ``ZSET``
-        matches a phrase in the index
+    :param set stop_words: a ``set`` of stop words to remove from index/search data
+    :param integer cache_timeout: how long to keep around search results
     :param conn_kwargs: any named parameters that should be used when connecting
         to Redis, e.g. ``host='localhost', port=6379``
 

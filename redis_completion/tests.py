@@ -2,7 +2,6 @@ import random
 from unittest import TestCase
 
 from redis_completion.engine import RedisEngine
-from redis_completion.text import clean_phrase, create_key, partial_complete
 
 
 stop_words = set(['a', 'an', 'the', 'of'])
@@ -92,7 +91,12 @@ class RedisCompletionTestCase(TestCase):
         self.assertEqual(results, ['testing python code', 'web testing python code'])
 
     def test_correct_sorting(self):
-        strings = ['aaaa%s' % chr(i + ord('a')) for i in range(26)]
+        strings = []
+        for i in range(26):
+            strings.append('aaaa%s' % chr(i + ord('a')))
+            if i > 0:
+                strings.append('aaa%sa' % chr(i + ord('a')))
+
         random.shuffle(strings)
 
         for s in strings:
@@ -100,6 +104,9 @@ class RedisCompletionTestCase(TestCase):
 
         results = self.engine.search('aaa')
         self.assertEqual(results, sorted(strings))
+
+        results = self.engine.search('aaa', limit=30)
+        self.assertEqual(results, sorted(strings)[:30])
 
     def test_removing_objects(self):
         self.store_data()
@@ -135,26 +142,11 @@ class RedisCompletionTestCase(TestCase):
         # see how many keys we have in the db - check again in a bit
         key_len = len(redis_client.keys())
 
-        # make sure that the final item in our sorted set indicates such
-        values = redis_client.zrange(self.engine.search_key('testingpython'), 0, -1)
-        self.assertEqual(values, [self.engine.terminator])
-
         self.store_data(2)
         key_len2 = len(redis_client.keys())
 
         self.assertTrue(key_len != key_len2)
-
-        # check to see that the final item in the sorted set from earlier now
-        # includes a reference to 'c'
-        values = redis_client.zrange(self.engine.search_key('testingpython'), 0, -1)
-        self.assertEqual(values, [self.engine.terminator, 'c'])
-
         self.engine.remove(2)
-
-        # see that the reference to 'c' is removed so that we aren't following
-        # a path that no longer exists
-        values = redis_client.zrange(self.engine.search_key('testingpython'), 0, -1)
-        self.assertEqual(values, [self.engine.terminator])
 
         # back to the original amount of keys
         self.assertEqual(len(redis_client.keys()), key_len)
@@ -163,40 +155,11 @@ class RedisCompletionTestCase(TestCase):
         self.assertEqual(len(redis_client.keys()), initial_key_count)
 
     def test_clean_phrase(self):
-        stop_words = set(['a', 'an', 'the', 'of'])
-        self.assertEqual(clean_phrase('abc def ghi'), ['abc', 'def', 'ghi'])
+        self.assertEqual(self.engine.clean_phrase('abc def ghi'), ['abc', 'def', 'ghi'])
 
-        self.assertEqual(clean_phrase('a A tHe an a', stop_words), [])
-        self.assertEqual(clean_phrase('', stop_words), [])
-
-        self.assertEqual(
-            clean_phrase('The Best of times, the blurst of times', stop_words),
-            ['best', 'times,', 'blurst', 'times'])
-
-    def test_partial_complete(self):
-        self.assertEqual(list(partial_complete('1')), ['1'])
-        self.assertEqual(list(partial_complete('1 2')), ['1 2', '2'])
-        self.assertEqual(list(partial_complete('1 2 3')), ['1 2', '1 2 3', '2 3', '3'])
-        self.assertEqual(list(partial_complete('1 2 3 4')), ['1 2', '1 2 3', '2 3', '2 3 4', '3 4', '4'])
+        self.assertEqual(self.engine.clean_phrase('a A tHe an a'), [])
+        self.assertEqual(self.engine.clean_phrase(''), [])
 
         self.assertEqual(
-            list(partial_complete('The Best of times, the blurst of times', stop_words=stop_words)),
-            ['best times,', 'best times, blurst', 'times, blurst', 'times, blurst times', 'blurst times', 'times']
-        )
-
-        self.assertEqual(list(partial_complete('a the An', stop_words=stop_words)), [])
-        self.assertEqual(list(partial_complete('a', stop_words=stop_words)), [])
-
-    def test_create_key(self):
-        self.assertEqual(
-            create_key('the best of times, the blurst of Times', stop_words=stop_words),
-            'besttimesblurst'
-        )
-
-        self.assertEqual(create_key('<?php $bling; $bling; ?>'),
-            'phpblingbling')
-
-        self.assertEqual(create_key(''), '')
-
-        self.assertEqual(create_key('the a an', stop_words=stop_words), '')
-        self.assertEqual(create_key('a', stop_words=stop_words), '')
+            self.engine.clean_phrase('The Best of times, the blurst of times'),
+            ['best', 'times', 'blurst', 'times'])
