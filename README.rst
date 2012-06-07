@@ -1,10 +1,16 @@
 redis-completion
 ================
 
+**NOT READY FOR PUBLIC CONSUMPTION**
+
 autocompletion with `redis <http://redis.io>`_ based on:
 
 * http://antirez.com/post/autocomplete-with-redis.html
 * http://stackoverflow.com/questions/1958005/redis-autocomplete/1966188
+
+redis-completion is capable of storing a large number of phrases and quickly
+searching them for matches.  Rich data can be stored and retrieved, helping you
+avoid trips to the database when retrieving search results.
 
 
 usage
